@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+
+public interface IMenuComponent
+{
+    void Display(int depth);
+    void Add(IMenuComponent component);
+    void Remove(IMenuComponent component);
+}
+
+public class MenuItem : IMenuComponent
+{
+    private string _name;
+
+    public MenuItem(string name)
+    {
+        _name = name;
+    }
+
+    public void Display(int depth)
+    {
+        Console.WriteLine(new string(' ', depth) + _name);
+    }
+
+    public void Add(IMenuComponent component)
+    {
+        throw new NotSupportedException("Cannot add to a MenuItem.");
+    }
+
+    public void Remove(IMenuComponent component)
+    {
+        throw new NotSupportedException("Cannot remove from a MenuItem.");
+    }
+}
+
+public class Menu : IMenuComponent
+{
+    private List<IMenuComponent> _components;
+    private string _name;
+
+    public Menu(string name)
+    {
+        _components = new List<IMenuComponent>();
+        _name = name;
+    }
+
+    public void Display(int depth)
+    {
+        Console.WriteLine(new string('-', depth) + _name);
+        foreach (var item in _components)
+        {
+            item.Display(depth + 2);
+        }
+    }
+
+    public void Add(IMenuComponent component)
+    {
+        _components.Add(component);
+    }
+
+    public void Remove(IMenuComponent component)
+    {
+        _components.Remove(component);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var pizza = new MenuItem("Pizza");
+        var pasta = new MenuItem("Pasta");
+        var salad = new MenuItem("Salad");
+
+        var drinksMenu = new Menu("Drinks");
+        var dessertMenu = new Menu("Dessert");
+
+        drinksMenu.Add(new MenuItem("Fanta"));
+        drinksMenu.Add(new MenuItem("Water"));
+        drinksMenu.Add(new MenuItem("Vodka"));
+
+        dessertMenu.Add(new MenuItem("Cake"));
+
+        var mainMenu = new Menu("Menu");
+        mainMenu.Add(pizza);
+        mainMenu.Add(pasta);
+        mainMenu.Add(salad);
+        mainMenu.Add(drinksMenu);
+        mainMenu.Add(dessertMenu);
+
+        mainMenu.Display(1);
+    }
+}
